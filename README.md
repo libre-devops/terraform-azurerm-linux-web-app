@@ -10,12 +10,12 @@ module "plan" {
   add_to_app_service_environment = false
 
   os_type  = "Linux"
-  sku_name = "Y1"
+  sku_name = "S1"
 }
 
 #checkov:skip=CKV2_AZURE_145:TLS 1.2 is allegedly the latest supported as per hashicorp docs
-module "fnc_app" {
-  source = "registry.terraform.io/libre-devops/linux-function-app/azurerm"
+module "web_app" {
+  source = "registry.terraform.io/libre-devops/linux-web-app/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location

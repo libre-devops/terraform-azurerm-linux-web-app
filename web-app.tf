@@ -1,10 +1,9 @@
 resource "azurerm_linux_web_app" "web_app" {
-  name                = var.app_name
-  service_plan_id     = var.service_plan_id
-  location            = var.location
-  resource_group_name = var.rg_name
-  app_settings        = var.app_settings
-
+  name                       = var.app_name
+  service_plan_id            = var.service_plan_id
+  location                   = var.location
+  resource_group_name        = var.rg_name
+  app_settings               = var.app_settings
   https_only                 = var.https_only
   client_certificate_enabled = var.client_certificate_enabled
   client_certificate_mode    = var.client_certificate_mode
@@ -80,9 +79,7 @@ resource "azurerm_linux_web_app" "web_app" {
             content {
               action_type                    = lookup(var.settings.site_config.auto_heal_setting.action, "action_type", null)
               minimum_process_execution_time = lookup(var.settings.site_config.auto_heal_setting.action, "minimum_process_execution_time", null)
-
             }
-
           }
 
           dynamic "trigger" {
@@ -92,8 +89,8 @@ resource "azurerm_linux_web_app" "web_app" {
               dynamic "requests" {
                 for_each = lookup(var.settings.site_config.auto_heal_setting.trigger, "requests", {}) != {} ? [1] : []
                 content {
-                  count      = lookup(var.settings.site_config.auto_heal_setting.trigger.requests, "count", null)
-                  interval   = lookup(var.settings.site_config.auto_heal_setting.trigger.requests, "interval", null)
+                  count    = lookup(var.settings.site_config.auto_heal_setting.trigger.requests, "count", null)
+                  interval = lookup(var.settings.site_config.auto_heal_setting.trigger.requests, "interval", null)
                 }
               }
 
@@ -104,8 +101,6 @@ resource "azurerm_linux_web_app" "web_app" {
                   interval   = lookup(var.settings.site_config.auto_heal_setting.trigger.slow_request, "interval", null)
                   time_taken = lookup(var.settings.site_config.auto_heal_setting.trigger.slow_request, "time_taken", null)
                   path       = lookup(var.settings.site_config.auto_heal_setting.trigger.slow_request, "path", null)
-
-
                 }
               }
 

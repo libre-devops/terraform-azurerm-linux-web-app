@@ -63,23 +63,6 @@ variable "force_disabled_content_share" {
   default     = false
 }
 
-variable "web_app_vnet_integration_enabled" {
-  description = "Enable VNET integration with the Function App. `web_app_vnet_integration_subnet_id` is mandatory if enabled"
-  type        = bool
-  default     = false
-}
-
-variable "web_app_vnet_integration_subnet_id" {
-  description = "ID of the subnet to associate with the Function App (VNet integration)"
-  type        = string
-  default     = null
-}
-
-variable "web_app_extension_version" {
-  type        = string
-  description = "The function extension version"
-}
-
 variable "https_only" {
   description = "Disable http procotol and keep only https"
   type        = bool
@@ -125,22 +108,6 @@ variable "site_config" {
   default     = {}
 }
 
-variable "storage_account_access_key" {
-  description = "Access key the storage account to use. If null a new storage account is created"
-  type        = string
-  default     = null
-}
-
-variable "storage_account_name" {
-  description = "Name of storage account"
-  type        = string
-}
-
-variable "storage_container_name" {
-  description = "The name of the storage container to keep backups"
-  default     = null
-}
-
 variable "storage_key_vault_secret_id" {
   type        = string
   description = "The secret ID for the connection string of the storage account used by the function app"
@@ -159,4 +126,16 @@ variable "tags" {
   default = {
     source = "terraform"
   }
+}
+
+variable "web_app_vnet_integration_enabled" {
+  description = "Enable VNET integration with the Function App. `web_app_vnet_integration_subnet_id` is mandatory if enabled"
+  type        = bool
+  default     = false
+}
+
+variable "web_app_vnet_integration_subnet_id" {
+  description = "ID of the subnet to associate with the Function App (VNet integration)"
+  type        = string
+  default     = null
 }
