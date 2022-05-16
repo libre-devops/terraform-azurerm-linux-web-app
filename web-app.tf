@@ -34,26 +34,26 @@ resource "azurerm_linux_web_app" "web_app" {
           }
         }
       }
-    }
 
-    dynamic "http_logs" {
-      for_each = lookup(var.settings.logs, "http_logs", {}) != {} ? [1] : []
-      content {
+      dynamic "http_logs" {
+        for_each = lookup(var.settings.logs, "http_logs", {}) != {} ? [1] : []
+        content {
 
-        dynamic "azure_blob_storage" {
-          for_each = lookup(var.settings.logs.http_logs, "azure_blob_storage", {}) != {} ? [1] : []
-          content {
-            level             = lookup(var.settings.logs.http_logs.azure_blob_storage, "level", false)
-            retention_in_days = lookup(var.settings.logs.http_logs.azure_blob_storage, "retention_in_days", false)
-            sas_url           = lookup(var.settings.logs.http_logs.azure_blob_storage, "sas_url", false)
+          dynamic "azure_blob_storage" {
+            for_each = lookup(var.settings.logs.http_logs, "azure_blob_storage", {}) != {} ? [1] : []
+            content {
+              level             = lookup(var.settings.logs.http_logs.azure_blob_storage, "level", false)
+              retention_in_days = lookup(var.settings.logs.http_logs.azure_blob_storage, "retention_in_days", false)
+              sas_url           = lookup(var.settings.logs.http_logs.azure_blob_storage, "sas_url", false)
+            }
           }
-        }
 
-        dynamic "file_system" {
-          for_each = lookup(var.settings.logs.http_logs, "file_system", {}) != {} ? [1] : []
-          content {
-            retention_in_days = lookup(var.settings.logs.http_logs.file_system, "retention_in_days", false)
-            retention_in_mb   = lookup(var.settings.logs.http_logs.file_system, "retention_in_mb", false)
+          dynamic "file_system" {
+            for_each = lookup(var.settings.logs.http_logs, "file_system", {}) != {} ? [1] : []
+            content {
+              retention_in_days = lookup(var.settings.logs.http_logs.file_system, "retention_in_days", false)
+              retention_in_mb   = lookup(var.settings.logs.http_logs.file_system, "retention_in_mb", false)
+            }
           }
         }
       }
