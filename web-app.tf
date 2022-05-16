@@ -7,41 +7,59 @@ resource "azurerm_linux_web_app" "web_app" {
   https_only                 = var.https_only
   client_certificate_enabled = var.client_certificate_enabled
   client_certificate_mode    = var.client_certificate_mode
-  daily_memory_time_quota    = var.daily_memory_time_quota
   enabled                    = var.enabled
+  tags                       = var.tags
 
 
   dynamic "logs" {
     for_each = lookup(var.settings, "application_stack", {}) != {} ? [1] : []
     content {
-      application_logs        = lookup(var.settings.logs, "application_logs", false)
+
       detailed_error_messages = lookup(var.settings.logs, "detailed_error_messages", false)
       failed_request_tracing  = lookup(var.settings.logs, "failed_request_tracing", false)
 
-      dynamic "http_logs" {
-        for_each = lookup(var.settings.logs, "http_logs", {}) != {} ? [1] : []
+      dynamic "application_logs" {
+        for_each = lookup(var.settings.logs, "application_logs", {}) != {} ? [1] : []
         content {
 
+          file_system_level = lookup(var.settings.logs.application_logs, "file_system_level", false)
+
           dynamic "azure_blob_storage" {
-            for_each = lookup(var.settings.logs.http_logs, "azure_blob_storage", {}) != {} ? [1] : []
+            for_each = lookup(var.settings.logs.application_logs, "azure_blob_storage", {}) != {} ? [1] : []
             content {
               level             = lookup(var.settings.logs.http_logs.azure_blob_storage, "level", false)
               retention_in_days = lookup(var.settings.logs.http_logs.azure_blob_storage, "retention_in_days", false)
               sas_url           = lookup(var.settings.logs.http_logs.azure_blob_storage, "sas_url", false)
             }
           }
+        }
+      }
+    }
 
-          dynamic "file_system" {
-            for_each = lookup(var.settings.logs.http_logs, "file_system", {}) != {} ? [1] : []
-            content {
-              retention_in_days = lookup(var.settings.logs.http_logs.file_system, "retention_in_days", false)
-              retention_in_mb   = lookup(var.settings.logs.http_logs.file_system, "retention_in_mb", false)
-            }
+    dynamic "http_logs" {
+      for_each = lookup(var.settings.logs, "http_logs", {}) != {} ? [1] : []
+      content {
+
+        dynamic "azure_blob_storage" {
+          for_each = lookup(var.settings.logs.http_logs, "azure_blob_storage", {}) != {} ? [1] : []
+          content {
+            level             = lookup(var.settings.logs.http_logs.azure_blob_storage, "level", false)
+            retention_in_days = lookup(var.settings.logs.http_logs.azure_blob_storage, "retention_in_days", false)
+            sas_url           = lookup(var.settings.logs.http_logs.azure_blob_storage, "sas_url", false)
+          }
+        }
+
+        dynamic "file_system" {
+          for_each = lookup(var.settings.logs.http_logs, "file_system", {}) != {} ? [1] : []
+          content {
+            retention_in_days = lookup(var.settings.logs.http_logs.file_system, "retention_in_days", false)
+            retention_in_mb   = lookup(var.settings.logs.http_logs.file_system, "retention_in_mb", false)
           }
         }
       }
     }
   }
+
 
   dynamic "site_config" {
     for_each = lookup(var.settings, "site_config", {}) != {} ? [1] : []
@@ -326,8 +344,6 @@ resource "azurerm_linux_web_app" "web_app" {
         identity_ids = length(var.identity_ids) > 0 ? var.identity_ids : []
       }
     }
-
-    tags = var.tags
   }
 }
 
