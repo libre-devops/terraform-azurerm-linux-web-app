@@ -113,7 +113,9 @@ resource "azurerm_linux_web_app" "web_app" {
               }
 
               dynamic "slow_request" {
-                for_each = lookup(var.settings.site_config.auto_heal_setting.trigger, "slow_request", {}) != {} ? [1] : []
+                for_each = lookup(var.settings.site_config.auto_heal_setting.trigger, "slow_request", {}) != {} ? [
+                  1
+                ] : []
                 content {
                   count      = lookup(var.settings.site_config.auto_heal_setting.trigger.slow_request, "count", null)
                   interval   = lookup(var.settings.site_config.auto_heal_setting.trigger.slow_request, "interval", null)
@@ -123,7 +125,9 @@ resource "azurerm_linux_web_app" "web_app" {
               }
 
               dynamic "status_code" {
-                for_each = lookup(var.settings.site_config.auto_heal_setting.trigger, "status_code", {}) != {} ? [1] : []
+                for_each = lookup(var.settings.site_config.auto_heal_setting.trigger, "status_code", {}) != {} ? [
+                  1
+                ] : []
                 content {
                   count             = lookup(var.settings.site_config.auto_heal_setting.trigger.status_code, "count", null)
                   interval          = lookup(var.settings.site_config.auto_heal_setting.trigger.status_code, "interval", null)
@@ -136,47 +140,71 @@ resource "azurerm_linux_web_app" "web_app" {
             }
           }
         }
+      }
 
-        dynamic "application_stack" {
-          for_each = lookup(var.settings.site_config, "application_stack", {}) != {} ? [1] : []
-          content {
-            java_version            = lookup(var.settings.site_config.application_stack, "java_version", null)
-            java_server             = lookup(var.settings.site_config.application_stack, "java_server", null)
-            java_server_version     = lookup(var.settings.site_config.application_stack, "java_server_version", null)
-            php_version             = lookup(var.settings.site_config.application_stack, "php_version", null)
-            ruby_version            = lookup(var.settings.site_config.application_stack, "ruby_version", null)
-            dotnet_version          = lookup(var.settings.site_config.application_stack, "dotnet_version", null)
-            node_version            = lookup(var.settings.site_config.application_stack, "node_version", null)
-            python_version          = lookup(var.settings.site_config.application_stack, "python_version", null)
-            powershell_core_version = lookup(var.settings.site_config.application_stack, "powershell_core_version", null)
-            docker_image            = lookup(var.settings.site_config.application_stack, "docker_image", null)
-            docker_image_tag        = lookup(var.settings.site_config.application_stack, "docker_image_tag", null)
-          }
+      dynamic "application_stack" {
+        for_each = lookup(var.settings.site_config, "application_stack", {}) != {} ? [1] : []
+        content {
+          java_version            = lookup(var.settings.site_config.application_stack, "java_version", null)
+          java_server             = lookup(var.settings.site_config.application_stack, "java_server", null)
+          java_server_version     = lookup(var.settings.site_config.application_stack, "java_server_version", null)
+          php_version             = lookup(var.settings.site_config.application_stack, "php_version", null)
+          ruby_version            = lookup(var.settings.site_config.application_stack, "ruby_version", null)
+          dotnet_version          = lookup(var.settings.site_config.application_stack, "dotnet_version", null)
+          node_version            = lookup(var.settings.site_config.application_stack, "node_version", null)
+          python_version          = lookup(var.settings.site_config.application_stack, "python_version", null)
+          powershell_core_version = lookup(var.settings.site_config.application_stack, "powershell_core_version", null)
+          docker_image            = lookup(var.settings.site_config.application_stack, "docker_image", null)
+          docker_image_tag        = lookup(var.settings.site_config.application_stack, "docker_image_tag", null)
+        }
+      }
+
+      dynamic "cors" {
+        for_each = try(var.settings.site_config.cors, {})
+
+        content {
+          allowed_origins     = lookup(cors, "allowed_origins", null)
+          support_credentials = lookup(cors, "support_credentials", null)
+        }
+      }
+
+      dynamic "ip_restriction" {
+        for_each = try(var.settings.site_config.ip_restriction, {})
+
+        content {
+          ip_address                = lookup(ip_restriction, "ip_address", null)
+          service_tag               = lookup(ip_restriction, "service_tag", null)
+          virtual_network_subnet_id = lookup(ip_restriction, "virtual_network_subnet_id", null)
+          name                      = lookup(ip_restriction, "name", null)
+          priority                  = lookup(ip_restriction, "priority", null)
+          action                    = lookup(ip_restriction, "action", null)
         }
 
-        dynamic "cors" {
-          for_each = try(var.settings.site_config.cors, {})
+        dynamic "headers" {
+          for_each = try(var.settings.site_config.headers, {})
 
           content {
-            allowed_origins     = lookup(cors, "allowed_origins", null)
-            support_credentials = lookup(cors, "support_credentials", null)
+            x_azure_fdid      = lookup(headers, "x_azure_fdid", null)
+            x_fd_health_probe = lookup(headers, "x_fd_health_probe", null)
+            x_forwarded_for   = lookup(headers, "x_forwarded_for", null)
+            x_forwarded_host  = lookup(headers, "x_forwarded_host", null)
           }
         }
+      }
 
-        dynamic "ip_restriction" {
-          for_each = try(var.settings.site_config.ip_restriction, {})
+      dynamic "scm_ip_restriction" {
+        for_each = try(var.settings.site_config.scm_ip_restriction, {})
 
-          content {
-            ip_address                = lookup(ip_restriction, "ip_address", null)
-            service_tag               = lookup(ip_restriction, "service_tag", null)
-            virtual_network_subnet_id = lookup(ip_restriction, "virtual_network_subnet_id", null)
-            name                      = lookup(ip_restriction, "name", null)
-            priority                  = lookup(ip_restriction, "priority", null)
-            action                    = lookup(ip_restriction, "action", null)
-          }
+        content {
+          ip_address                = lookup(scm_ip_restriction, "ip_address", null)
+          service_tag               = lookup(scm_ip_restriction, "service_tag", null)
+          virtual_network_subnet_id = lookup(scm_ip_restriction, "virtual_network_subnet_id", null)
+          name                      = lookup(scm_ip_restriction, "name", null)
+          priority                  = lookup(scm_ip_restriction, "priority", null)
+          action                    = lookup(scm_ip_restriction, "action", null)
 
           dynamic "headers" {
-            for_each = try(var.settings.site_config.headers, {})
+            for_each = try(scm_ip_restriction.headers, {})
 
             content {
               x_azure_fdid      = lookup(headers, "x_azure_fdid", null)
@@ -186,163 +214,139 @@ resource "azurerm_linux_web_app" "web_app" {
             }
           }
         }
+      }
+    }
+  }
 
-        dynamic "scm_ip_restriction" {
-          for_each = try(var.settings.site_config.scm_ip_restriction, {})
+  dynamic "auth_settings" {
+    for_each = lookup(var.settings, "auth_settings", {}) != {} ? [1] : []
 
-          content {
-            ip_address                = lookup(scm_ip_restriction, "ip_address", null)
-            service_tag               = lookup(scm_ip_restriction, "service_tag", null)
-            virtual_network_subnet_id = lookup(scm_ip_restriction, "virtual_network_subnet_id", null)
-            name                      = lookup(scm_ip_restriction, "name", null)
-            priority                  = lookup(scm_ip_restriction, "priority", null)
-            action                    = lookup(scm_ip_restriction, "action", null)
+    content {
+      enabled                        = lookup(var.settings.auth_settings, "enabled", false)
+      additional_login_parameters    = lookup(var.settings.auth_settings, "additional_login_parameters", null)
+      allowed_external_redirect_urls = lookup(var.settings.auth_settings, "allowed_external_redirect_urls", null)
+      default_provider               = lookup(var.settings.auth_settings, "default_provider", null)
+      issuer                         = lookup(var.settings.auth_settings, "issuer", null)
+      runtime_version                = lookup(var.settings.auth_settings, "runtime_version", null)
+      token_refresh_extension_hours  = lookup(var.settings.auth_settings, "token_refresh_extension_hours", null)
+      token_store_enabled            = lookup(var.settings.auth_settings, "token_store_enabled", null)
+      unauthenticated_client_action  = lookup(var.settings.auth_settings, "unauthenticated_client_action", null)
 
-            dynamic "headers" {
-              for_each = try(scm_ip_restriction.headers, {})
+      dynamic "active_directory" {
+        for_each = lookup(var.settings.auth_settings, "active_directory", {}) != {} ? [1] : []
 
-              content {
-                x_azure_fdid      = lookup(headers, "x_azure_fdid", null)
-                x_fd_health_probe = lookup(headers, "x_fd_health_probe", null)
-                x_forwarded_for   = lookup(headers, "x_forwarded_for", null)
-                x_forwarded_host  = lookup(headers, "x_forwarded_host", null)
-              }
-            }
-          }
+        content {
+          client_id         = var.settings.auth_settings.active_directory.client_id
+          client_secret     = lookup(var.settings.auth_settings.active_directory, "client_secret", null)
+          allowed_audiences = lookup(var.settings.auth_settings.active_directory, "allowed_audiences", null)
+        }
+      }
+
+      dynamic "facebook" {
+        for_each = lookup(var.settings.auth_settings, "facebook", {}) != {} ? [1] : []
+
+        content {
+          app_id       = var.settings.auth_settings.facebook.app_id
+          app_secret   = var.settings.auth_settings.facebook.app_secret
+          oauth_scopes = lookup(var.settings.auth_settings.facebook, "oauth_scopes", null)
+        }
+      }
+
+      dynamic "google" {
+        for_each = lookup(var.settings.auth_settings, "google", {}) != {} ? [1] : []
+
+        content {
+          client_id     = var.settings.auth_settings.google.client_id
+          client_secret = var.settings.auth_settings.google.client_secret
+          oauth_scopes  = lookup(var.settings.auth_settings.google, "oauth_scopes", null)
+        }
+      }
+
+      dynamic "microsoft" {
+        for_each = lookup(var.settings.auth_settings, "microsoft", {}) != {} ? [1] : []
+
+        content {
+          client_id     = var.settings.auth_settings.microsoft.client_id
+          client_secret = var.settings.auth_settings.microsoft.client_secret
+          oauth_scopes  = lookup(var.settings.auth_settings.microsoft, "oauth_scopes", null)
+        }
+      }
+
+      dynamic "twitter" {
+        for_each = lookup(var.settings.auth_settings, "twitter", {}) != {} ? [1] : []
+
+        content {
+          consumer_key    = var.settings.auth_settings.twitter.consumer_key
+          consumer_secret = var.settings.auth_settings.twitter.consumer_secret
+        }
+      }
+
+      dynamic "github" {
+        for_each = lookup(var.settings.auth_settings, "github", {}) != {} ? [1] : []
+
+        content {
+          client_id                  = var.settings.auth_settings.github.client_id
+          client_secret              = var.settings.auth_settings.github.client_secret
+          client_secret_setting_name = var.settings.auth_settings.github.client_secret_setting_name
+          oauth_scopes               = lookup(var.settings.auth_settings.github, "oauth_scopes", null)
         }
       }
     }
+  }
 
-    dynamic "auth_settings" {
-      for_each = lookup(var.settings, "auth_settings", {}) != {} ? [1] : []
+  dynamic "connection_string" {
+    for_each = var.connection_strings
+    content {
+      name  = lookup(connection_string.value, "name", null)
+      type  = lookup(connection_string.value, "type", null)
+      value = lookup(connection_string.value, "value", null)
+    }
+  }
 
-      content {
-        enabled                        = lookup(var.settings.auth_settings, "enabled", false)
-        additional_login_parameters    = lookup(var.settings.auth_settings, "additional_login_parameters", null)
-        allowed_external_redirect_urls = lookup(var.settings.auth_settings, "allowed_external_redirect_urls", null)
-        default_provider               = lookup(var.settings.auth_settings, "default_provider", null)
-        issuer                         = lookup(var.settings.auth_settings, "issuer", null)
-        runtime_version                = lookup(var.settings.auth_settings, "runtime_version", null)
-        token_refresh_extension_hours  = lookup(var.settings.auth_settings, "token_refresh_extension_hours", null)
-        token_store_enabled            = lookup(var.settings.auth_settings, "token_store_enabled", null)
-        unauthenticated_client_action  = lookup(var.settings.auth_settings, "unauthenticated_client_action", null)
+  lifecycle {
+    ignore_changes = [
+      app_settings.WEBSITE_RUN_FROM_ZIP,
+      app_settings.WEBSITE_RUN_FROM_PACKAGE,
+      app_settings.MACHINEKEY_DecryptionKey,
+      app_settings.WEBSITE_CONTENTAZUREFILECONNECTIONSTRING,
+      app_settings.WEBSITE_CONTENTSHARE
+    ]
+  }
 
-        dynamic "active_directory" {
-          for_each = lookup(var.settings.auth_settings, "active_directory", {}) != {} ? [1] : []
+  dynamic "backup" {
+    for_each = lookup(var.settings, "backup", {}) != {} ? [1] : []
 
-          content {
-            client_id         = var.settings.auth_settings.active_directory.client_id
-            client_secret     = lookup(var.settings.auth_settings.active_directory, "client_secret", null)
-            allowed_audiences = lookup(var.settings.auth_settings.active_directory, "allowed_audiences", null)
-          }
-        }
+    content {
+      name                = var.settings.backup.name
+      enabled             = var.settings.backup.enabled
+      storage_account_url = try(var.settings.backup.storage_account_url, var.backup_sas_url)
 
-        dynamic "facebook" {
-          for_each = lookup(var.settings.auth_settings, "facebook", {}) != {} ? [1] : []
+      dynamic "schedule" {
+        for_each = lookup(var.settings.backup, "schedule", {}) != {} ? [1] : []
 
-          content {
-            app_id       = var.settings.auth_settings.facebook.app_id
-            app_secret   = var.settings.auth_settings.facebook.app_secret
-            oauth_scopes = lookup(var.settings.auth_settings.facebook, "oauth_scopes", null)
-          }
-        }
-
-        dynamic "google" {
-          for_each = lookup(var.settings.auth_settings, "google", {}) != {} ? [1] : []
-
-          content {
-            client_id     = var.settings.auth_settings.google.client_id
-            client_secret = var.settings.auth_settings.google.client_secret
-            oauth_scopes  = lookup(var.settings.auth_settings.google, "oauth_scopes", null)
-          }
-        }
-
-        dynamic "microsoft" {
-          for_each = lookup(var.settings.auth_settings, "microsoft", {}) != {} ? [1] : []
-
-          content {
-            client_id     = var.settings.auth_settings.microsoft.client_id
-            client_secret = var.settings.auth_settings.microsoft.client_secret
-            oauth_scopes  = lookup(var.settings.auth_settings.microsoft, "oauth_scopes", null)
-          }
-        }
-
-        dynamic "twitter" {
-          for_each = lookup(var.settings.auth_settings, "twitter", {}) != {} ? [1] : []
-
-          content {
-            consumer_key    = var.settings.auth_settings.twitter.consumer_key
-            consumer_secret = var.settings.auth_settings.twitter.consumer_secret
-          }
-        }
-
-        dynamic "github" {
-          for_each = lookup(var.settings.auth_settings, "github", {}) != {} ? [1] : []
-
-          content {
-            client_id                  = var.settings.auth_settings.github.client_id
-            client_secret              = var.settings.auth_settings.github.client_secret
-            client_secret_setting_name = var.settings.auth_settings.github.client_secret_setting_name
-            oauth_scopes               = lookup(var.settings.auth_settings.github, "oauth_scopes", null)
-          }
+        content {
+          frequency_interval       = var.settings.backup.schedule.frequency_interval
+          frequency_unit           = lookup(var.settings.backup.schedule, "frequency_unit", null)
+          keep_at_least_one_backup = lookup(var.settings.backup.schedule, "keep_at_least_one_backup", null)
+          retention_period_days    = lookup(var.settings.backup.schedule, "retention_period_days", null)
+          start_time               = lookup(var.settings.backup.schedule, "start_time", null)
         }
       }
     }
+  }
 
-    dynamic "connection_string" {
-      for_each = var.connection_strings
-      content {
-        name  = lookup(connection_string.value, "name", null)
-        type  = lookup(connection_string.value, "type", null)
-        value = lookup(connection_string.value, "value", null)
-      }
+  dynamic "identity" {
+    for_each = length(var.identity_ids) == 0 && var.identity_type == "SystemAssigned" ? [var.identity_type] : []
+    content {
+      type = var.identity_type
     }
+  }
 
-    lifecycle {
-      ignore_changes = [
-        app_settings.WEBSITE_RUN_FROM_ZIP,
-        app_settings.WEBSITE_RUN_FROM_PACKAGE,
-        app_settings.MACHINEKEY_DecryptionKey,
-        app_settings.WEBSITE_CONTENTAZUREFILECONNECTIONSTRING,
-        app_settings.WEBSITE_CONTENTSHARE
-      ]
-    }
-
-    dynamic "backup" {
-      for_each = lookup(var.settings, "backup", {}) != {} ? [1] : []
-
-      content {
-        name                = var.settings.backup.name
-        enabled             = var.settings.backup.enabled
-        storage_account_url = try(var.settings.backup.storage_account_url, var.backup_sas_url)
-
-        dynamic "schedule" {
-          for_each = lookup(var.settings.backup, "schedule", {}) != {} ? [1] : []
-
-          content {
-            frequency_interval       = var.settings.backup.schedule.frequency_interval
-            frequency_unit           = lookup(var.settings.backup.schedule, "frequency_unit", null)
-            keep_at_least_one_backup = lookup(var.settings.backup.schedule, "keep_at_least_one_backup", null)
-            retention_period_days    = lookup(var.settings.backup.schedule, "retention_period_days", null)
-            start_time               = lookup(var.settings.backup.schedule, "start_time", null)
-          }
-        }
-      }
-    }
-
-    dynamic "identity" {
-      for_each = length(var.identity_ids) == 0 && var.identity_type == "SystemAssigned" ? [var.identity_type] : []
-      content {
-        type = var.identity_type
-      }
-    }
-
-    dynamic "identity" {
-      for_each = length(var.identity_ids) > 0 || var.identity_type == "UserAssigned" ? [var.identity_type] : []
-      content {
-        type         = var.identity_type
-        identity_ids = length(var.identity_ids) > 0 ? var.identity_ids : []
-      }
+  dynamic "identity" {
+    for_each = length(var.identity_ids) > 0 || var.identity_type == "UserAssigned" ? [var.identity_type] : []
+    content {
+      type         = var.identity_type
+      identity_ids = length(var.identity_ids) > 0 ? var.identity_ids : []
     }
   }
 }
