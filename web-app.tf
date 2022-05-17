@@ -185,7 +185,6 @@ resource "azurerm_linux_web_app" "web_app" {
               x_forwarded_host  = lookup(var.settings.site_config.ip_restriction.headers, "x_forwarded_host", null)
             }
           }
-
         }
       }
 
