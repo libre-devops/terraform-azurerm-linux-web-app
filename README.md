@@ -1,4 +1,14 @@
 ```hcl
+module "rg" {
+  source = "registry.terraform.io/libre-devops/rg/azurerm"
+
+  rg_name  = "rg-${var.short}-${var.loc}-${terraform.workspace}-build" // rg-ldo-euw-dev-build
+  location = local.location                                            // compares var.loc with the var.regions var to match a long-hand name, in this case, "euw", so "westeurope"
+  tags     = local.tags
+
+  #  lock_level = "CanNotDelete" // Do not set this value to skip lock
+}
+
 module "plan" {
   source = "registry.terraform.io/libre-devops/service-plan/azurerm"
 
@@ -21,15 +31,12 @@ module "web_app" {
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  app_name        = "fnc-${var.short}-${var.loc}-${terraform.workspace}-01"
+  app_name        = "app-${var.short}-${var.loc}-${terraform.workspace}-01"
   service_plan_id = module.plan.service_plan_id
 
-  storage_account_name          = module.sa.sa_name
-  storage_account_access_key    = module.sa.sa_primary_access_key
   storage_uses_managed_identity = "false"
 
-  identity_type               = "SystemAssigned"
-  functions_extension_version = "~4"
+  identity_type = "SystemAssigned"
 
   settings = {
     site_config = {
@@ -37,7 +44,7 @@ module "web_app" {
       http2_enabled       = true
 
       application_stack = {
-        powershell_core_version = 7
+        python_version = 3.9
       }
     }
 

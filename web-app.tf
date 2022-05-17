@@ -300,6 +300,15 @@ resource "azurerm_linux_web_app" "web_app" {
     }
   }
 
+  dynamic "sticky_settings" {
+    for_each = lookup(var.settings, "sticky_settings", {}) != {} ? [1] : []
+    content {
+      app_setting_names       = lookup(var.settings.sticky_settings, "app_setting_names", false)
+      connection_string_names = lookup(var.settings.sticky_settings, "connection_string_name", false)
+    }
+  }
+
+
   lifecycle {
     ignore_changes = [
       app_settings.WEBSITE_RUN_FROM_ZIP,
