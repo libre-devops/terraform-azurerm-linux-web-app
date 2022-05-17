@@ -175,30 +175,41 @@ resource "azurerm_linux_web_app" "web_app" {
           action                    = lookup(var.settings.site_config.ip_restriction, "actuib", null)
         }
 
-        dynamic "headers" {
-          for_each = lookup(var.settings.site_config.ip_restriction, "headers", {}) != {} ? [1] : []
+        #        dynamic "headers" {
+        #          for_each = lookup(var.settings.site_config.ip_restriction, "headers", {}) != {} ? [1] : []
+        #
+        #          content {
+        #            x_azure_fdid      = lookup(var.settings.site_config.ip_restriction.headers, "x_azure_fdid", null)
+        #            x_fd_health_probe = lookup(var.settings.site_config.ip_restriction.headers, "x_fd_health_prob", null)
+        #            x_forwarded_for   = lookup(var.settings.site_config.ip_restriction.headers, "x_forwarded_for", null)
+        #            x_forwarded_host  = lookup(var.settings.site_config.ip_restriction.headers, "x_forwarded_host", null)
+        #          }
+      }
+    }
 
-          content {
-            x_azure_fdid      = lookup(var.settings.site_config.ip_restriction.headers, "x_azure_fdid", null)
-            x_fd_health_probe = lookup(var.settings.site_config.ip_restriction.headers, "x_fd_health_prob", null)
-            x_forwarded_for   = lookup(var.settings.site_config.ip_restriction.headers, "x_forwarded_for", null)
-            x_forwarded_host  = lookup(var.settings.site_config.ip_restriction.headers, "x_forwarded_host", null)
-          }
-        }
+    dynamic "scm_ip_restriction" {
+      for_each = lookup(var.settings.site_config, "scm_ip_restriction", {}) != {} ? [1] : []
+
+      content {
+        ip_address                = lookup(var.settings.site_config.scm_ip_restriction, "ip_address", null)
+        service_tag               = lookup(var.settings.site_config.scm_ip_restriction, "service_tag", null)
+        virtual_network_subnet_id = lookup(var.settings.site_config.scm_ip_restriction, "virtual_network_subnet_id", null)
+        name                      = lookup(var.settings.site_config.scm_ip_restriction, "name", null)
+        priority                  = lookup(var.settings.site_config.scm_ip_restriction, "priority", null)
+        action                    = lookup(var.settings.site_config.scm_ip_restriction, "actuib", null)
       }
 
-      dynamic "scm_ip_restriction" {
-        for_each = lookup(var.settings.site_config, "scm_ip_restriction", {}) != {} ? [1] : []
-
-        content {
-          ip_address                = lookup(var.settings.site_config.scm_ip_restriction, "ip_address", null)
-          service_tag               = lookup(var.settings.site_config.scm_ip_restriction, "service_tag", null)
-          virtual_network_subnet_id = lookup(var.settings.site_config.scm_ip_restriction, "virtual_network_subnet_id", null)
-          name                      = lookup(var.settings.site_config.scm_ip_restriction, "name", null)
-          priority                  = lookup(var.settings.site_config.scm_ip_restriction, "priority", null)
-          action                    = lookup(var.settings.site_config.scm_ip_restriction, "actuib", null)
-        }
-      }
+      #        dynamic "headers" {
+      #          for_each = lookup(var.settings.site_config.scm_ip_restriction, "headers", {}) != {} ? [1] : []
+      #
+      #          content {
+      #            x_azure_fdid      = lookup(var.settings.site_config.scm_ip_restriction.headers, "x_azure_fdid", null)
+      #            x_fd_health_probe = lookup(var.settings.site_config.scm_ip_restriction.headers, "x_fd_health_prob", null)
+      #            x_forwarded_for   = lookup(var.settings.site_config.scm_ip_restriction.headers, "x_forwarded_for", null)
+      #            x_forwarded_host  = lookup(var.settings.site_config.scm_ip_restriction.headers, "x_forwarded_host", null)
+      #          }
+      #        }
+      #      }
     }
   }
 
