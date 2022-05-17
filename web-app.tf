@@ -173,17 +173,19 @@ resource "azurerm_linux_web_app" "web_app" {
           name                      = lookup(var.settings.site_config.ip_restriction, "name", null)
           priority                  = lookup(var.settings.site_config.ip_restriction, "priority", null)
           action                    = lookup(var.settings.site_config.ip_restriction, "actuib", null)
-        }
 
-        dynamic "headers" {
-          for_each = lookup(var.settings.site_config.ip_restriction, "headers", {}) != {} ? [1] : []
 
-          content {
-            x_azure_fdid      = lookup(var.settings.site_config.ip_restriction.headers, "x_azure_fdid", null)
-            x_fd_health_probe = lookup(var.settings.site_config.ip_restriction.headers, "x_fd_health_prob", null)
-            x_forwarded_for   = lookup(var.settings.site_config.ip_restriction.headers, "x_forwarded_for", null)
-            x_forwarded_host  = lookup(var.settings.site_config.ip_restriction.headers, "x_forwarded_host", null)
+          dynamic "headers" {
+            for_each = lookup(var.settings.site_config.ip_restriction, "headers", {}) != {} ? [1] : []
+
+            content {
+              x_azure_fdid      = lookup(var.settings.site_config.ip_restriction.headers, "x_azure_fdid", null)
+              x_fd_health_probe = lookup(var.settings.site_config.ip_restriction.headers, "x_fd_health_prob", null)
+              x_forwarded_for   = lookup(var.settings.site_config.ip_restriction.headers, "x_forwarded_for", null)
+              x_forwarded_host  = lookup(var.settings.site_config.ip_restriction.headers, "x_forwarded_host", null)
+            }
           }
+
         }
       }
 
