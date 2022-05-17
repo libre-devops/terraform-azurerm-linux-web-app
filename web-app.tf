@@ -26,6 +26,7 @@ resource "azurerm_linux_web_app" "web_app" {
           dynamic "azure_blob_storage" {
             for_each = lookup(var.settings.logs.application_logs, "azure_blob_storage", {}) != {} ? [1] : []
             content {
+              level             = lookup(var.settings.logs.http_logs.application_logs.azure_blob_storage, "level", false)
               retention_in_days = lookup(var.settings.logs.http_logs.application_logs.azure_blob_storage, "retention_in_days", false)
               sas_url           = lookup(var.settings.logs.http_logs.application_logs.azure_blob_storage, "sas_url", false)
             }
@@ -40,7 +41,6 @@ resource "azurerm_linux_web_app" "web_app" {
           dynamic "azure_blob_storage" {
             for_each = lookup(var.settings.logs.http_logs, "azure_blob_storage", {}) != {} ? [1] : []
             content {
-              level             = lookup(var.settings.logs.http_logs.azure_blob_storage, "level", false)
               retention_in_days = lookup(var.settings.logs.http_logs.azure_blob_storage, "retention_in_days", false)
               sas_url           = lookup(var.settings.logs.http_logs.azure_blob_storage, "sas_url", false)
             }
@@ -197,17 +197,6 @@ resource "azurerm_linux_web_app" "web_app" {
           name                      = lookup(var.settings.site_config.scm_ip_restriction, "name", null)
           priority                  = lookup(var.settings.site_config.scm_ip_restriction, "priority", null)
           action                    = lookup(var.settings.site_config.scm_ip_restriction, "actuib", null)
-        }
-
-        dynamic "headers" {
-          for_each = lookup(var.settings.site_config.scm_ip_restriction, "headers", {}) != {} ? [1] : []
-
-          content {
-            x_azure_fdid      = lookup(var.settings.site_config.scm_ip_restriction.headers, "x_azure_fdid", null)
-            x_fd_health_probe = lookup(var.settings.site_config.scm_ip_restriction.headers, "x_fd_health_prob", null)
-            x_forwarded_for   = lookup(var.settings.site_config.scm_ip_restriction.headers, "x_forwarded_for", null)
-            x_forwarded_host  = lookup(var.settings.site_config.scm_ip_restriction.headers, "x_forwarded_host", null)
-          }
         }
       }
     }
