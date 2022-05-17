@@ -26,7 +26,6 @@ resource "azurerm_linux_web_app" "web_app" {
           dynamic "azure_blob_storage" {
             for_each = lookup(var.settings.logs.application_logs, "azure_blob_storage", {}) != {} ? [1] : []
             content {
-              level             = lookup(var.settings.logs.http_logs.application_logs.azure_blob_storage, "level", false)
               retention_in_days = lookup(var.settings.logs.http_logs.application_logs.azure_blob_storage, "retention_in_days", false)
               sas_url           = lookup(var.settings.logs.http_logs.application_logs.azure_blob_storage, "sas_url", false)
             }
