@@ -12,7 +12,7 @@ resource "azurerm_linux_web_app" "web_app" {
 
 
   dynamic "logs" {
-    for_each = lookup(var.settings, "application_stack", {}) != {} ? [1] : []
+    for_each = lookup(var.settings, "logs", {}) != {} ? [1] : []
     content {
 
       detailed_error_messages = lookup(var.settings.logs, "detailed_error_messages", false)
@@ -27,9 +27,9 @@ resource "azurerm_linux_web_app" "web_app" {
           dynamic "azure_blob_storage" {
             for_each = lookup(var.settings.logs.application_logs, "azure_blob_storage", {}) != {} ? [1] : []
             content {
-              level             = lookup(var.settings.logs.http_logs.azure_blob_storage, "level", false)
-              retention_in_days = lookup(var.settings.logs.http_logs.azure_blob_storage, "retention_in_days", false)
-              sas_url           = lookup(var.settings.logs.http_logs.azure_blob_storage, "sas_url", false)
+              level             = lookup(var.settings.logs.http_logs.application_logs.azure_blob_storage, "level", false)
+              retention_in_days = lookup(var.settings.logs.http_logs.application_logs.azure_blob_storage, "retention_in_days", false)
+              sas_url           = lookup(var.settings.logs.http_logs.application_logs.azure_blob_storage, "sas_url", false)
             }
           }
         }
@@ -79,7 +79,6 @@ resource "azurerm_linux_web_app" "web_app" {
       minimum_tls_version                           = lookup(var.settings.site_config, "minimum_tls_version", null)
       remote_debugging_enabled                      = lookup(var.settings.site_config, "remote_debugging_enabled", null)
       remote_debugging_version                      = lookup(var.settings.site_config, "remote_debugging_version", null)
-      runtime_scale_monitoring_enabled              = lookup(var.settings.site_config, "runtime_scale_monitoring_enabled", null)
       scm_minimum_tls_version                       = lookup(var.settings.site_config, "scm_minimum_tls_version", null)
       scm_use_main_ip_restriction                   = lookup(var.settings.site_config, "scm_use_main_ip_restriction", null)
       use_32_bit_worker                             = lookup(var.settings.site_config, "use_32_bit_worker", null)
@@ -145,17 +144,16 @@ resource "azurerm_linux_web_app" "web_app" {
       dynamic "application_stack" {
         for_each = lookup(var.settings.site_config, "application_stack", {}) != {} ? [1] : []
         content {
-          java_version            = lookup(var.settings.site_config.application_stack, "java_version", null)
-          java_server             = lookup(var.settings.site_config.application_stack, "java_server", null)
-          java_server_version     = lookup(var.settings.site_config.application_stack, "java_server_version", null)
-          php_version             = lookup(var.settings.site_config.application_stack, "php_version", null)
-          ruby_version            = lookup(var.settings.site_config.application_stack, "ruby_version", null)
-          dotnet_version          = lookup(var.settings.site_config.application_stack, "dotnet_version", null)
-          node_version            = lookup(var.settings.site_config.application_stack, "node_version", null)
-          python_version          = lookup(var.settings.site_config.application_stack, "python_version", null)
-          powershell_core_version = lookup(var.settings.site_config.application_stack, "powershell_core_version", null)
-          docker_image            = lookup(var.settings.site_config.application_stack, "docker_image", null)
-          docker_image_tag        = lookup(var.settings.site_config.application_stack, "docker_image_tag", null)
+          java_version        = lookup(var.settings.site_config.application_stack, "java_version", null)
+          java_server         = lookup(var.settings.site_config.application_stack, "java_server", null)
+          java_server_version = lookup(var.settings.site_config.application_stack, "java_server_version", null)
+          php_version         = lookup(var.settings.site_config.application_stack, "php_version", null)
+          ruby_version        = lookup(var.settings.site_config.application_stack, "ruby_version", null)
+          dotnet_version      = lookup(var.settings.site_config.application_stack, "dotnet_version", null)
+          node_version        = lookup(var.settings.site_config.application_stack, "node_version", null)
+          python_version      = lookup(var.settings.site_config.application_stack, "python_version", null)
+          docker_image        = lookup(var.settings.site_config.application_stack, "docker_image", null)
+          docker_image_tag    = lookup(var.settings.site_config.application_stack, "docker_image_tag", null)
         }
       }
 
@@ -181,7 +179,7 @@ resource "azurerm_linux_web_app" "web_app" {
         }
 
         dynamic "headers" {
-          for_each = try(var.settings.site_config.headers, {})
+          for_each = try(var.settings.site_config.ip_restriction.headers, {})
 
           content {
             x_azure_fdid      = lookup(headers, "x_azure_fdid", null)
@@ -204,7 +202,7 @@ resource "azurerm_linux_web_app" "web_app" {
           action                    = lookup(scm_ip_restriction, "action", null)
 
           dynamic "headers" {
-            for_each = try(scm_ip_restriction.headers, {})
+            for_each = try(var.settings.site_config.scm_ip_restriction.headers, {})
 
             content {
               x_azure_fdid      = lookup(headers, "x_azure_fdid", null)
