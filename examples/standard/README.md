@@ -10,6 +10,23 @@ module "rg" {
   #  lock_level = "CanNotDelete" // Do not set this value to skip lock
 }
 
+module "law" {
+  source = "registry.terraform.io/libre-devops/log-analytics-workspace/azurerm"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  create_new_workspace       = true
+  law_name                   = "law-${var.short}-${var.loc}-${terraform.workspace}-01"
+  law_sku                    = "PerGB2018"
+  retention_in_days          = "30"
+  daily_quota_gb             = "0.5"
+  internet_ingestion_enabled = true
+  internet_query_enabled     = true
+}
+
+
 module "plan" {
   source = "registry.terraform.io/libre-devops/service-plan/azurerm"
 
@@ -32,10 +49,15 @@ module "web_app" {
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
+
+  connect_app_insights_to_law_workspace = true
+  enable_app_insights                   = true
+  workspace_id                          = module.law.law_id
+  app_insights_name                     = "appi-${var.short}-${var.loc}-${terraform.workspace}-01"
+  app_insights_type                     = "web"
+
   app_name        = "app-${var.short}-${var.loc}-${terraform.workspace}-01"
   service_plan_id = module.plan.service_plan_id
-
-  storage_uses_managed_identity = true
 
   identity_type = "SystemAssigned"
 
@@ -45,12 +67,14 @@ module "web_app" {
       http2_enabled       = true
 
       application_stack = {
-        python_version = 3.9
+        node_version = "18-lts"
       }
     }
 
     auth_settings = {
-      enabled = true
+      enabled                       = false
+      runtime_version               = "~1"
+      unauthenticated_client_action = "AllowAnonymous"
     }
   }
 }
@@ -69,6 +93,7 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_law"></a> [law](#module\_law) | registry.terraform.io/libre-devops/log-analytics-workspace/azurerm | n/a |
 | <a name="module_plan"></a> [plan](#module\_plan) | registry.terraform.io/libre-devops/service-plan/azurerm | n/a |
 | <a name="module_rg"></a> [rg](#module\_rg) | registry.terraform.io/libre-devops/rg/azurerm | n/a |
 | <a name="module_web_app"></a> [web\_app](#module\_web\_app) | registry.terraform.io/libre-devops/linux-web-app/azurerm | n/a |
