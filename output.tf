@@ -1,6 +1,16 @@
+output "app_id" {
+  description = "The app id of the application insights"
+  value       = azurerm_application_insights.app_insights_workspace.*.app_id
+}
+
 output "app_insights_connection_string" {
   description = "The connection string for the application insights"
   value       = azurerm_application_insights.app_insights_workspace.*.connection_string
+}
+
+output "instrumentation_key" {
+  description = "The instrumentation key of app insights"
+  value       = azurerm_application_insights.app_insights_workspace.*.instrumentation_key
 }
 
 output "outbound_ip_addresses" {

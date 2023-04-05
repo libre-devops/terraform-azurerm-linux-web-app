@@ -33,7 +33,7 @@ module "web_app" {
   app_name        = "app-${var.short}-${var.loc}-${terraform.workspace}-01"
   service_plan_id = module.plan.service_plan_id
 
-  storage_uses_managed_identity = "false"
+  storage_uses_managed_identity = true
 
   identity_type = "SystemAssigned"
 
