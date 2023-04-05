@@ -1,3 +1,8 @@
+output "app_insights_connection_string" {
+  description = "The connection string for the application insights"
+  value       = azurerm_application_insights.app_insights_workspace.*.connection_string
+}
+
 output "outbound_ip_addresses" {
   value       = azurerm_linux_web_app.web_app.outbound_ip_addresses
   description = "A comma separated list of outbound IP addresses"
