@@ -93,6 +93,12 @@ variable "client_certificate_mode" {
   default     = "Optional"
 }
 
+variable "connect_app_insights_to_law_workspace" {
+  type        = bool
+  description = "Whether the app insights being made should be connected to a workspace id"
+  default     = null
+}
+
 variable "connection_strings" {
   description = "Connection strings for App Service"
   type        = list(map(string))

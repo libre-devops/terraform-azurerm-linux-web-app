@@ -40,6 +40,7 @@ No modules.
 | <a name="input_builtin_logging_enabled"></a> [builtin\_logging\_enabled](#input\_builtin\_logging\_enabled) | Whether AzureWebJobsDashboards should be enabled, default is true | `bool` | `true` | no |
 | <a name="input_client_certificate_enabled"></a> [client\_certificate\_enabled](#input\_client\_certificate\_enabled) | Whether client certificate auth is enabled, default is false | `bool` | `false` | no |
 | <a name="input_client_certificate_mode"></a> [client\_certificate\_mode](#input\_client\_certificate\_mode) | The option for client certificates | `string` | `"Optional"` | no |
+| <a name="input_connect_app_insights_to_law_workspace"></a> [connect\_app\_insights\_to\_law\_workspace](#input\_connect\_app\_insights\_to\_law\_workspace) | Whether the app insights being made should be connected to a workspace id | `bool` | `null` | no |
 | <a name="input_connection_strings"></a> [connection\_strings](#input\_connection\_strings) | Connection strings for App Service | `list(map(string))` | `[]` | no |
 | <a name="input_daily_memory_time_quota"></a> [daily\_memory\_time\_quota](#input\_daily\_memory\_time\_quota) | The amount of memory in gigabyte-seconds that your app can consume per day, defaults to 0 | `number` | `0` | no |
 | <a name="input_enable_app_insights"></a> [enable\_app\_insights](#input\_enable\_app\_insights) | Whether app insights should be made | `bool` | `false` | no |
